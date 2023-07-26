@@ -21,7 +21,7 @@ size_t custom_strlen(const char *str);
  *
  * Return: An integer less than, equal to
  * or greater than zero if str1 is found,
- * respectively, to be less than, to match, or be great than str2.
+ * respectively, to be less than, to match, or be greater than str2.
  */
 int custom_strcmp(const char *str1, const char *str2);
 
@@ -31,27 +31,27 @@ int custom_strcmp(const char *str1, const char *str2);
  *
  * Return: A pointer to the newly allocated duplicate string.
  */
-char *custom_strdup(const char (str);
+char *custom_strdup(const char *str);
 
-		/**
-		 * custom_strcat - concatenate two strings.
-		 * @str1: The first string.
-		 * @str2: The second string.
-		 *
-		 * Return: A pointer to the newly allocated string
-		 * containing the concatenated strings.
-		 */
-		char *custom_strcat(const char *str1, const char *str2);
+/**
+ * custom_strcat - Concatenate two strings.
+ * @str1: The first string.
+ * @str2: The second string.
+ *
+ * Return: A pointer to the newly allocated string
+ * containing the concatenated strings.
+ */
+char *custom_strcat(const char *str1, const char *str2);
 
-		/**
-		 * custom_strncmp - Compare at most n characters of two strings
-		 * @str1: The first string to compare
-		 * @str2: The second string to compare
-		 * @n: The maximum number of characters to compare
-		 *
-		 * Return: 0 if the strings are equal, a negative value if str1 is less than
-		 * str2, or a positive value if str1 is greater than str2
-		 */
+/**
+ * custom_strncmp - Compare at most n characters of two strings
+ * @str1: The first string to compare
+ * @str2: The second string to compare
+ * @n: The maximum number of characters to compare
+ *
+ * Return: 0 if the strings are equal, a negative value if str1 is less than
+ * str2, or a positive value if str1 is greater than str2
+ */
 int custom_strncmp(const char *str1, const char *str2, size_t n);
 
 void execute_interactive_mode(void);
@@ -68,5 +68,7 @@ char *custom_strchr(const char *str, int c);
 void nullify_after_comment(char *str);
 
 void null_after_comment(char *str, size_t length);
+
+int execute_exit(char **args);
 
 #endif /* CUSTOM_STRING_H */

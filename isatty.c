@@ -7,56 +7,178 @@
 #include <string.h>
 
 #define MAX_ARGS 10 /* Maximum number of arguments for the command */
+
+
 /**
- * read_input - read user inpput.
- * @input: pointer to the input string.
- * @bufsizr: pointer to the size of the buffer.
- *
- * This function displays the prompt ":)" and
- * reads the user input from stdin
- * into the buffer pointed by @input with the size @bufsize.
- * It checks for the end of file (Ctrl+D) and
- * handles freeing the input buffer
- * in case of an error or end of file.
- */
-void read_input(char **input, size_t *bufsize)
+* display_prompt - Display the shell prompt
+**/
+void display_prompt(void)
+
 {
-	ssize_t characters;
+int is_interactive;
+is_interactive = 0;  /* Flag to indicate interactive mode */
+if (is_interactive)
+write(STDOUT_FILENO, ":) ", 3);
+}
 
-	/* Read user input */
-	characters = getline(input, bufsize, stdin);
+void null_after_comment(char *str, size_t length) {
+    /* Locate the '#' symbol */
+	    char *comment_pos;
+    size_t comment_index;
 
-	/* Check for end of file (Ctrl+D) */
-	if (characters == -1)
-	{
-		if (*input)
-			free(*input);
-		/* exit(EXIT_FAILURE); */
-		/* write(STDOUT_FILENO, "\n", 1); */
-		exit(0);
-		/* return; */
-	}
+    comment_pos = custom_strchr(str, '#');
+    if (comment_pos != NULL) {
+        /* Nullify the rest of the string after the '#' symbol */
+        comment_index = comment_pos - str;
+        if (comment_index < length) {
+            str[comment_index] = '\0';
+        }
+    }
+}
 
-	/* Remove newline character at the end, if present */
-	if ((*input)[characters - 1] == '\n')
-		(*input)[characters - 1] = '\0';
+
+/**
+* run_non_interactive_mode - Execute the program in non-interactive mode.
+* @filename: The name of the file to process
+*
+* Description: This function handles the execution of the program
+* in non-interactive mode based on the provided argument.
+**/
+void run_non_interactive_mode(const char *filename)
+{
+char *line;
+size_t len;
+ssize_t read;
+FILE *file;
+char *command;
+char *args[MAX_ARGS + 1];
+int arg_count;
+int status;
+pid_t pid;
+int is_interactive;
+is_interactive = 0;
+/* Flag to indicate interactive mode */
+if (is_interactive)
+write(STDOUT_FILENO, ":) ", 3);
+
+file = fopen(filename, "r");
+if (file == NULL)
+{
+perror("fopen");
+return;
+}
+
+line = NULL;
+len = 0;
+
+while ((read = getline(&line, &len, file)) != -1)
+{
+null_after_comment(line, custom_strlen(line));
+if (line[read - 1] == '\0')
+{write(STDOUT_FILENO, "\n", 1);
+return;
+}
+
+/* Remove the trailing newline character, if any */
+if (line[read - 1] == '\n')
+line[read - 1] = '\0';
+
+/*nullify*/
+nullify_after_comment(line);
+if (custom_strcmp(line, "/bin/echo ") == 0)
+{
+write(STDOUT_FILENO, "\n", 1);
+return;
+}
+
+/* Tokenize the line into command and arguments */
+command = strtok(line, " \t");
+arg_count = 0;
+
+while (command != NULL && arg_count < MAX_ARGS)
+{
+args[arg_count++] = command;
+command = strtok(NULL, " \t");
+}
+args[arg_count] = NULL;
+
+pid = fork();
+if (pid == -1)
+{
+perror("fork");
+return;
+}
+else if (pid == 0)
+{
+execve(args[0], args, environ);
+perror("execve");
+exit(EXIT_FAILURE);
+}
+else
+{
+waitpid(pid, &status, 0);
+}
+}
+
+free(line);
+fclose(file);
 }
 
 /**
- * print_environment_variables - print environment variables.
- *
- * This function prints the environment variables.
- * to the standard output.
- * It retrieves the environment variables from
- * the `environ` array.
- */
-void print_environment_variables(void)
+* execute_interactive_mode - Execute the program in interactive mode.
+*
+* Description: This function handles the execution of the program
+* in interactive mode, allowing user interaction and input.
+**/
+
+void execute_interactive_mode(void)
 {
-	int i;
-	/* print environment variables */
-	for (i = 0; environ[i] != NULL; i++)
-	{
-		write(STDOUT_FILENO, environ[i], calculatelength(environ[i]));
-		write(STDOUT_FILENO, "\n", 1);
-	}
+char *input = NULL;
+size_t bufsize = 0;
+char *args[MAX_ARGS + 2]; /* Array to hold the command and its arguments */
+int i = 0;
+int is_interactive;
+
+while (1)
+{
+is_interactive = 0;
+/* Flag to indicate interactive mode */
+if (is_interactive)
+write(STDOUT_FILENO, ":) ", 3);
+
+/*display_prompt();*/
+read_input(&input, &bufsize);
+
+/* Rest of your original code goes here... */
+
+if (is_empty_input(input))
+continue;
+
+/**
+* if (input[0] == 'e' && input[1] == 'x' &&
+* input[2] == 'i' && input[3] == 't' &&
+* input[4] == '\0')
+* break;
+**/
+
+if (compareStrings(input, "env") == 0)
+{
+print_environment_variables();
+continue;
 }
+
+i = 0;
+args[i] = strtok(input, " \t");
+
+while (args[i] != NULL && i < MAX_ARGS)
+args[++i] = strtok(NULL, " \t");
+
+args[i] = NULL;
+
+execute_command(args[0], args);
+}
+
+/* Free dynamically allocated memory, if any */
+free(input);
+}
+

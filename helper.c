@@ -7,7 +7,7 @@
 #include <string.h>
 
 /**
- * comparestrings - Compare two strings and return the result.
+ * compareStrings - Compare two strings and return the result.
  * @str1: The first string.
  * @str2: The second string.
  *
@@ -16,15 +16,15 @@
 
 int compareStrings(const char *str1, const char *str2)
 {
-	while (*str1 && *str2)
-	{
-		if (*str1 != *str2)
-			return (*str1 - *str2);
+while (*str1 && *str2)
+{
+if (*str1 != *str2)
+return (*str1 - *str2);
 
-		str1++;
-		str2++;
-	}
-	return (*str1 - *str2);
+str1++;
+str2++;
+}
+return (*str1 - *str2);
 }
 
 /**
@@ -36,13 +36,13 @@ int compareStrings(const char *str1, const char *str2)
 
 size_t calculateLength(const char *str)
 {
-	size_t length = 0;
-	while (*str)
-	{
-		length++;
-		str++;
-	}
-	return (length);
+size_t length = 0;
+while (*str)
+{
+length++;
+str++;
+}
+return (length);
 }
 
 /**
@@ -54,14 +54,14 @@ size_t calculateLength(const char *str)
 
 int command_exists(const char *command)
 {
-	/* Resolve the command path */
-	char *command_path = resolve_command_path(command);
-	if (command path == NULL)
-		return (0); /* command not found */
+/* Resolve the command path */
+char *command_path = resolve_command_path(command);
+if (command_path == NULL)
+return (0); /* Command not found */
 
-	/* Free the allocated memory */
-	free(command_path);
-	return (1); /* command exists */
+/* Free the allocated memory */
+free(command_path);
+return (1); /* Command exists */
 }
 
 /**
@@ -73,8 +73,8 @@ int command_exists(const char *command)
 
 int path_exists(const char *path)
 {
-	if (access(path, F_OK) != -1)
-		return (1); /* path exists */
-	else
-		return (0); /* path does not exist */
+if (access(path, F_OK) != -1)
+return (1); /* Path exists */
+else
+return (0); /* Path does not exist */
 }
